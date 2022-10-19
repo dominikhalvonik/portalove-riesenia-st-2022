@@ -81,8 +81,10 @@ class DB
                 } else {
                     $destinations[$row['display_name']] = [
                         'attributes' => [
-                            'attribute_name' => $row['name'],
-                            'attribute_value' => $row['attribute_value'],
+                            0 => [
+                                'attribute_name' => $row['name'],
+                                'attribute_value' => $row['attribute_value'],
+                            ]
                         ],
                         'area' => $row['area'],
                         'description' => $row['description']
