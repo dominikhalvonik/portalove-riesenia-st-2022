@@ -5,16 +5,15 @@ use portalove\DB;
 
 $db = new DB("localhost", "portalove", "root", "", 3308);
 
-if(isset($_POST['submitttttt'])) {
-    $insert = $db->insertDestination(
+if(isset($_POST['submit'])) {
+    $update = $db->updateDestination(
+        $_POST['id'],
         $_POST['destination_name'],
         $_POST['destination_area'],
-        $_POST['destination_description'],
-        $_POST['attribute'],
-        $_POST['attribute_value']
+        $_POST['destination_description']
     );
 
-    if($insert) {
+    if($update) {
         header('Location: admin.php');
     } else {
         echo "FATAL ERROR!!";

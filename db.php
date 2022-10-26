@@ -65,7 +65,7 @@ class DB
     public function getDestinations()
     {
         $destinations = [];
-        $sql = "SELECT d.display_name, d.area, d.description, dad.name, da.attribute_value 
+        $sql = "SELECT d.id, d.display_name, d.area, d.description, dad.name, da.attribute_value 
                 FROM destination AS d
                 INNER JOIN destination_attribute AS da ON d.id = da.destination_id
                 INNER JOIN destination_attribute_definition AS dad ON da.destination_attribute_definition_id = dad.id";
@@ -87,13 +87,74 @@ class DB
                             ]
                         ],
                         'area' => $row['area'],
-                        'description' => $row['description']
+                        'description' => $row['description'],
+                        'id' => $row['id'],
                     ];
                 }
             }
             return  $destinations;
         } catch (\PDOException $e) {
             return [];
+        }
+    }
+
+    public function deleteDestination($id)
+    {
+        $sqlAttributes = "DELETE FROM destination_attribute WHERE destination_id = ". $id;
+        $sqlDestination = "DELETE FROM destination WHERE id = ". $id;
+
+        try {
+            $this->connection->query($sqlAttributes);
+            $this->connection->query($sqlDestination);
+            return true;
+        } catch (\PDOException $e) {
+            return false;
+        }
+    }
+
+    public function insertDestination($name, $area, $description, $attribute, $attributeValue)
+    {
+        $sqlDestination = "INSERT INTO destination(display_name, area, description, created_at, updated_at)
+                           VALUE ('".$name."', '".$area."', '".$description."', NOW(), NOW())";
+
+        try {
+            $this->connection->query($sqlDestination);
+            $destinationId = $this->connection->lastInsertId();
+
+            $sqlAttribute = "INSERT INTO destination_attribute(attribute_value, destination_attribute_definition_id, destination_id, created_at, updated_at)
+                             VALUE('".$attributeValue."', '".$attribute."', '".$destinationId."', NOW(), NOW())";
+            $this->connection->query($sqlAttribute);
+            return true;
+        } catch (\PDOException $e) {
+            return false;
+        }
+    }
+
+    public function getDestination($id)
+    {
+        $sql = "SELECT * FROM destination WHERE id = ".$id;
+        $destinationData = [];
+
+        try {
+            $query = $this->connection->query($sql);
+            $destinationData = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+            return $destinationData;
+        } catch (\PDOException $e) {
+            return $destinationData;
+        }
+    }
+
+    public function updateDestination($id, $name, $area, $description)
+    {
+        $sql = "UPDATE destination 
+                SET display_name = '".$name."', area = '".$area."', description = '".$description."', updated_at = NOW()
+                WHERE id =".$id;
+        try {
+            $this->connection->query($sql);
+            return true;
+        } catch (\PDOException $e) {
+            return false;
         }
     }
 }
