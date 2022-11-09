@@ -1,9 +1,7 @@
 <?php
-include_once "db.php";
+include_once "db_connect.php";
 
-use portalove\DB;
-
-$db = new DB("localhost", "portalove", "root", "", 3308);
+$db = $GLOBALS['db'];
 
 if(isset($_POST['submit'])) {
     $update = $db->updateDestination(

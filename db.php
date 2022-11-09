@@ -157,6 +157,24 @@ class DB
             return false;
         }
     }
+
+    public function login($username, $password)
+    {
+        $hash = sha1($password);
+        $sql = "SELECT COUNT(id) AS is_admin FROM user WHERE username = '".$username."' AND password = '".$hash."'";
+
+        try {
+            $query = $this->connection->query($sql);
+            $userExists = $query->fetch(\PDO::FETCH_ASSOC);
+            if(intval($userExists['is_admin']) === 1) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\PDOException $e) {
+            return false;
+        }
+    }
 }
 
 
